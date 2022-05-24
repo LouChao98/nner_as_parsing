@@ -1,0 +1,13 @@
+defaults:
+  - _base
+
+_target_: src.data.datamodule_more.brat.BratNER
+mask_stopword: false
+mask_punct: false
+span_indicator: false
+span_sub_indicator: false
+span_list: false
+forbid_shared_root: false
+num_label: ~
+allow_empty: false
+train_unk: false

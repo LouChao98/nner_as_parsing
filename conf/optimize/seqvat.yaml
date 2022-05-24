@@ -1,0 +1,16 @@
+# @package _global_
+
+optimizer:
+  groups: []
+  args:
+    _target_: torch.optim.AdamW
+    lr: 6.0e-4
+    betas: [0.9, 0.999]
+    weight_decay: 0.001
+
+scheduler:
+  interval: epoch
+  frequency: 1
+  args:
+    _target_: src.utils.scheduler.get_exponential_lr_scheduler
+    gamma: 0.992

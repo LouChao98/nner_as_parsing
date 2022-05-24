@@ -1,0 +1,4 @@
+progress_bar:
+  _target_: src.utils.callback.MyProgressBar
+  refresh_rate: 1
+  process_position: 0

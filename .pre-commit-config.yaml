@@ -1,0 +1,19 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+    -   id: debug-statements
+    -   id: mixed-line-ending
+-   repo: https://github.com/pre-commit/mirrors-yapf
+    rev: ''
+    hooks:
+    -   id: yapf
+        args: [--style=.style.yapf]
+-   repo: https://github.com/pycqa/isort
+    rev: 5.7.0
+    hooks:
+    -   id: isort
+        args: [-l=119]

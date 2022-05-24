@@ -1,0 +1,11 @@
+# Whether use word/... . May be read by datamodule.
+# If false, any embedding with fields=word/... will be ignored.
+_use_word: true # word embedding, char lstm, cnn lstm
+_use_subword: false # transformers
+_use_pos: false # pos
+
+# cat output of all embeddings. If false, return a dict.
+_cat_output: true
+
+# Whether force to normalize when epoch and batch.
+_runtime_normalize: 'none'

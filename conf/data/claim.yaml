@@ -1,0 +1,19 @@
+# @package _global_.data
+
+train: ~
+dev: ~
+test: ~
+unlabeled: ~
+aug_pair: ~
+vocab: ~ # Path to preprocessed vocab. (will be merged into runtime vocab)
+cache: ~
+
+use_cache: true
+use_unlabeled: false
+use_aug_pair: false
+
+# choose which mode is used to construct lowe-resource
+split_mode: ~
+
+# choose low-resource data by index (choose different seed)
+split_id: ~

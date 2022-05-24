@@ -1,0 +1,35 @@
+# some cfg should not belong to any submodule
+seed: ~
+name: ${name_guard:@@@AUTO@@@}
+watch_field: val/loss
+watch_mode: min
+root: ${hydra:runtime.cwd}
+
+hydra:
+  sweep:
+    dir: outputs/multirun/${now:%Y-%m-%d_%H-%M-%S}
+    subdir: ${path_guard:${hydra.job.override_dirname}}
+  run:
+    dir: outputs/${path_guard:${name}}/${now:%Y-%m-%d_%H-%M-%S}
+  output_subdir: config
+  job:
+    env_set:
+      PYTHONPATH: ${hydra:runtime.cwd}/research
+      TOKENIZERS_PARALLELISM: 'false'
+      # HF_DATASETS_OFFLINE: '1'
+      # TRANSFORMERS_OFFLINE: '1'
+      TORCH_WARN_ONCE: '1'
+      PYTORCH_JIT: '1'
+
+defaults:
+  - _self_
+  - datamodule: ~ # will be set by data and task
+  - data: ~
+  - embedding: ~ # will be set by model
+  - encoder: ~ # will be set by model
+  - task: ~ # will be set by model
+  - optimize: ~ # will be set by model
+  - metric: ~ # will be set by model
+  - runner: ~
+  - trainer: train_wo_wandb
+  - model: ~

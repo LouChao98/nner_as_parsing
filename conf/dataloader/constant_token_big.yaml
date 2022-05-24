@@ -1,0 +1,10 @@
+# see research.src.data.datamodule:get_dataset_iter
+token_size: 10000
+num_bucket: 16
+batch_size: -1
+shuffle: true
+no_drop: false
+fully_shuffle: ~
+num_workers: ${in_debugger:0,8}
+pin_memory: true
+force_same_len: false

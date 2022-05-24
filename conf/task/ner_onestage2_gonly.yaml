@@ -1,0 +1,40 @@
+_target_: src.task_specific.ner_onestage2_gonly.BratNEROneStage2
+
+loss_type: crf
+
+partition_reg: 0.
+maximize_entropy: 0.
+exp_opt_entropy: 0
+entropy_on_all: true
+
+label_loss_coeff: 1.
+struct_loss_threshold: 0
+neg_weight: 0.1
+bias_on_diff_head: 0.
+bias_on_diff_head_impl_version: po
+marginal_map: false
+unstructured_decode: false
+optimize_arc: 0.
+
+loss_reduction_mode: num_span:num_span
+fencepost_mode: 'lstm'
+
+arc_mlp_hidden: 500
+arc_post_hidden_dim: 0
+span_ind_mlp_hidden: 500
+span_ind_post_hidden_dim: 0
+label_mlp_hidden: 200
+label_post_hidden_dim: 0
+label_mode: ~
+label_use_head: 'marginal'
+label_pre_marginal: false
+mlp_dropout:  0.33
+mlp_activate: True
+scale: false
+positional_biaffine: false
+train_bias: 0.
+decode_bias: 0.
+train_prune_threshold: 0
+
+potential_normalize: true
+potential_normalize_var: 1.

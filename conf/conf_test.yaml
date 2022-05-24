@@ -1,0 +1,31 @@
+# some cfg should not belong to any submodule
+seed: 1
+name: ${hydra:job.override_dirname}
+project: uncategorized
+watch_field: val/loss
+watch_mode: min
+root: ${hydra:runtime.cwd}
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    env_set:
+      WANDB_CONSOLE: 'off'
+      PYTHONPATH: ${hydra:runtime.cwd}/research
+      TOKENIZERS_PARALLELISM: 'false'
+      TORCH_WARN_ONCE: '1'
+
+defaults:
+  - _self_
+  - datamodule: ~ # will be set by data and task
+  - data: wsj/wsj_full
+  - embedding: ~ # will be set by model
+  - encoder: ~ # will be set by model
+  - task: ~ # will be set by model
+  - optimize: ~ # will be set by model
+  - metric: ~ # will be set by model
+  - runner: basic
+  - trainer: test
+  - model: ~

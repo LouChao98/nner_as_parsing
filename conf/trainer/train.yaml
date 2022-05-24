@@ -1,0 +1,30 @@
+defaults:
+  - logger: wandb
+  - callbacks:
+    - wandb
+    - progressbar
+    - early_stopping
+    - lr_monitor # also may early stopping
+    - best_watcher
+    # - swa
+  - override /hydra/job_logging@_global_.hydra.job_logging: custom
+
+_target_: src.utils.fn.instantiate_trainer
+
+gpus: 1
+gradient_clip_val: 5.
+track_grad_norm: -1
+max_epochs: 1000
+max_steps: ~
+val_check_interval: 1.0 # int for n step, float for in epoch
+accumulate_grad_batches: 1
+precision: 32
+num_sanity_val_steps: ${in_debugger:0,2}
+resume_from_checkpoint: ~
+
+# following are settings you should not touch in most cases
+accelerator: ${accelerator:${.gpus}}
+terminate_on_nan: ${in_debugger:true,false}
+replace_sampler_ddp: false
+weights_summary: ${in_debugger:full,null}
+multiple_trainloader_mode: min_size

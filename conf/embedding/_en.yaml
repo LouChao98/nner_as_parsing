@@ -1,0 +1,7 @@
+# @package _global_
+
+emb_mapping:
+  glove100: ${root}/data/glove/glove.6B.100d.txt
+  glove300: ${root}/data/glove/glove.840B.300d.txt
+  glove6b_300: ${root}/data/glove/glove.6B.300d.txt
+  bio: ${root}/data/bio_nlp_vec/PubMed-shuffle-win-30.txt

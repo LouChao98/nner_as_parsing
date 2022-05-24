@@ -1,0 +1,21 @@
+# @package hydra.job_logging
+
+version: 1
+formatters:
+  console:
+    (): src.utils._logger.ColorFormatter
+    format: '[%(name)s] %(message)s'
+handlers:
+  console:
+    class: src.utils._logger.TqdmLoggingHandler
+    formatter: console
+    level: DEBUG
+root:
+  handlers: [console]
+loggers:
+  fastNLP:
+    handlers: [console]
+  lightning:
+    handlers: [console]
+
+disable_existing_loggers: false

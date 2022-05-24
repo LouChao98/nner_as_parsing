@@ -1,0 +1,6 @@
+# _target_: src.utils.metric.SpanMetricDetail
+
+
+_target_: src.utils.metric.SpanMetric
+unique: false
+label_as_string: false

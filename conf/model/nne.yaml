@@ -1,0 +1,67 @@
+# @package _global_
+
+defaults:
+  - override /data: brat/nne_ner
+  - override /embedding: en_transformer
+  - override /encoder: span_rel_sep_mix
+  - override /optimize: parsing_finetune
+  - override /metric: span
+  - override /runner: basic
+  - override /task: ner_onestage2_gonly
+  - override /dataloader@_global_.dataloader.default: constant_token_64b
+
+dataloader:
+  default:
+    batch_size: 48
+    token_size: 7500
+    force_same_len: false
+  val:
+    token_size: 4000
+  test:
+    token_size: 4000
+
+datamodule:
+  num_label: 114
+  span_indicator: true
+  span_list: true
+  allow_empty: true
+  max_len:
+    train: 100
+
+task:
+  positional_biaffine: true
+  mlp_dropout: 0.25
+  fencepost_mode: 'transformer'
+  maximize_entropy: 1.
+  exp_opt_entropy: 0.
+  bias_on_diff_head: 0.4
+  entropy_on_all: false
+  label_mode: ~
+  loss_reduction_mode: num_span:num_span
+  label_mlp_hidden: 150
+  span_ind_mlp_hidden: 128
+  arc_mlp_hidden: 128
+  potential_normalize_var: 2.
+  label_loss_coeff: 1.
+  label_pre_marginal: false
+
+trainer:
+  accumulate_grad_batches: 8
+  stochastic_weight_avg: true
+
+runner:
+  loss_reduction_mode: sum
+  ignore_punct: false
+
+model:
+  _target_: src.models.basic.BasicModel
+
+scheduler:
+  args:
+    num_warmup_steps: '2 epoch'
+    num_training_steps: '50 epoch'
+
+project: brat_nne
+
+watch_field: val/f1
+watch_mode: max

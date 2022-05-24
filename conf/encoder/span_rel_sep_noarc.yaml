@@ -1,0 +1,75 @@
+_target_: src.encoders.MuxEncoder
+_mix: false
+shared:
+  embedding: ${..embedding} # required for all sub modules
+  _target_: src.encoders.LSTMEncoder
+
+  reproject: 0
+  mix: ${.._mix}
+
+  embedding_dropout: 0.33
+  embedding_dropout_only_words: false
+  pre_shared_dropout: 0.33
+  post_shared_dropout: 0.33
+  pre_dropout: 0.
+  post_dropout: 0.
+
+  rnn_type: lstm
+  hidden_size: 400
+  proj_size: 0
+  num_layers: 3
+  output_layers: -1
+  init_version: zy
+  shared_dropout: true
+  lstm_dropout: 0.33
+
+
+span:
+  embedding: ${..embedding} # required for all sub modules
+  _target_: src.encoders.LSTMEncoder
+
+  reproject: 0
+  mix: ${.._mix}
+
+  embedding_dropout: 0.33
+  embedding_dropout_only_words: false
+  pre_shared_dropout: 0.33
+  post_shared_dropout: 0.33
+  pre_dropout: 0.
+  post_dropout: 0.
+
+  rnn_type: lstm
+  hidden_size: 400
+  proj_size: 0
+  num_layers: 2
+  output_layers: -1
+  init_version: zy
+  shared_dropout: true
+  lstm_dropout: 0.33
+
+label:
+  embedding: ${..embedding} # required for all sub modules
+  _target_: src.encoders.LSTMEncoder
+
+  reproject: 0
+  mix: ${.._mix}
+
+  embedding_dropout: 0.33
+  embedding_dropout_only_words: false
+  pre_shared_dropout: 0.33
+  post_shared_dropout: 0.33
+  pre_dropout: 0.
+  post_dropout: 0.
+
+  rnn_type: lstm
+  hidden_size: 400
+  proj_size: 0
+  num_layers: 2
+  output_layers: -1
+  init_version: zy
+  shared_dropout: true
+  lstm_dropout: 0.33
+
+mapping:
+  span: [ shared.x , span.x ]
+  label: [ shared.x , label.x ]

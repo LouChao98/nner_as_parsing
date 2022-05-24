@@ -1,0 +1,36 @@
+defaults:
+  - _en
+  - _claim
+
+_word_embedding: glove100
+
+word_embedding:
+  field: words
+  normalize:
+    when: begin
+    method: std
+  args:
+    _target_: fastNLP.embeddings.StaticEmbedding
+    model_dir_or_name: ${emb_mapping.${embedding._word_embedding}}
+    min_freq: 2
+    lower: true
+
+char_lstm:
+  field: words
+  args:
+    _target_: src.modules.embeddings.LSTMCharEmbedding
+    embed_size: 100
+    char_emb_size: 50
+    hidden_size: 100
+    min_char_freq: 0
+    include_word_start_end: false
+    activation: ~
+    linear: false
+    pool_method: last
+
+pos_embedding:
+  field: pos
+  args:
+    _target_: fastNLP.embeddings.StaticEmbedding
+    embedding_dim: 100
+    init_embed: normal

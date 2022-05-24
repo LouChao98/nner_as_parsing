@@ -1,0 +1,6 @@
+_target_: src.runners.BasicRunner
+
+load_from_checkpoint: ~
+
+test_when_val: true
+train_with_dev: false

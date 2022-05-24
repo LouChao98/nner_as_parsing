@@ -1,0 +1,11 @@
+# args for DataModule
+
+defaults:
+  - /dataloader@_global_.dataloader.default: constant_token
+  - /dataloader@_global_.dataloader.dev: constant_token_big
+  - /dataloader@_global_.dataloader.test: constant_token_big
+  - /dataloader@_global_.dataloader.unlabeled: constant_token_big
+
+normalize_word: true
+build_no_create_entry: true
+build_word_for_others: false

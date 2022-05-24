@@ -1,0 +1,58 @@
+# @package _global_
+
+defaults:
+  - override /data: brat/ace04_ner
+  - override /embedding: en_transformer
+  - override /encoder: span_rel_sep_mix
+  - override /optimize: parsing_finetune
+  - override /metric: span
+  - override /runner: basic
+  - override /task: ner_onestage2_gonly
+  - override /dataloader@_global_.dataloader.default: constant_token_64b
+
+dataloader:
+  default:
+    batch_size: 64
+    force_same_len: false
+
+datamodule:
+  num_label: 8
+  span_indicator: true
+  span_list: true
+  allow_empty: true
+
+task:
+  positional_biaffine: true
+  mlp_dropout: 0.25
+  fencepost_mode: 'transformer'
+  maximize_entropy: 1.
+  exp_opt_entropy: 0.
+  bias_on_diff_head: 0.4
+  entropy_on_all: false
+  label_mode: ~
+  loss_reduction_mode: num_span:num_span
+  arc_mlp_hidden: 300
+  span_ind_mlp_hidden: 300
+  label_mlp_hidden: 300
+  train_prune_threshold: 10
+
+trainer:
+  accumulate_grad_batches: 8
+  stochastic_weight_avg: true
+  
+runner:
+  loss_reduction_mode: sum
+  ignore_punct: false
+
+model:
+  _target_: src.models.basic.BasicModel
+
+scheduler:
+  args:
+    num_warmup_steps: '2 epoch'
+    num_training_steps: '50 epoch'
+
+project: brat_ace04
+
+watch_field: val/f1
+watch_mode: max

@@ -1,0 +1,10 @@
+# @package _global_.data
+
+defaults:
+  - /data/claim
+  - override /datamodule@_global_: brat_ner
+
+train: ${root}/data/brat/ace2004/brat/train
+dev: ${root}/data/brat/ace2004/brat/dev
+test: ${root}/data/brat/ace2004/brat/test
+cache: ${root}/cache/brat_ace04_ner

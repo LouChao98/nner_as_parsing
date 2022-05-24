@@ -1,0 +1,2 @@
+swa:
+  _target_: pytorch_lightning.callbacks.StochasticWeightAveraging
