@@ -1,0 +1,348 @@
+seed: 1
+name: ${name_guard:@@@AUTO@@@}
+watch_field: val/f1
+watch_mode: max
+root: ${hydra:runtime.cwd}
+dataloader:
+  default:
+    token_size: 7500
+    num_bucket: 32
+    batch_size: 64
+    shuffle: true
+    no_drop: false
+    fully_shuffle: null
+    num_workers: ${in_debugger:0,4}
+    pin_memory: true
+    force_same_len: false
+    single_sent_threshold: 150
+  dev:
+    token_size: 10000
+    num_bucket: 16
+    batch_size: -1
+    shuffle: true
+    no_drop: false
+    fully_shuffle: null
+    num_workers: ${in_debugger:0,4}
+    pin_memory: true
+    force_same_len: false
+  test:
+    token_size: 10000
+    num_bucket: 16
+    batch_size: -1
+    shuffle: true
+    no_drop: false
+    fully_shuffle: null
+    num_workers: ${in_debugger:0,4}
+    pin_memory: true
+    force_same_len: false
+  unlabeled:
+    token_size: 5000
+    num_bucket: 32
+    batch_size: 64
+    shuffle: true
+    no_drop: false
+    fully_shuffle: null
+    num_workers: ${in_debugger:0,4}
+    pin_memory: true
+    force_same_len: false
+datamodule:
+  normalize_word: true
+  utf_punct: true
+  build_no_create_entry: true
+  build_word_for_others: false
+  max_len:
+    unlabeled: 100
+    train: 125
+  _target_: src.data.datamodule_more.brat.BratNER
+  mask_stopword: false
+  mask_punct: false
+  span_indicator: true
+  span_sub_indicator: false
+  span_list: true
+  forbid_shared_root: false
+  num_label: null
+  allow_empty: true
+  train_unk: false
+data:
+  train: ${root}/data/brat/genia/brat_tacl/train
+  dev: ${root}/data/brat/genia/brat_tacl/dev
+  test: ${root}/data/brat/genia/brat_tacl/test
+  unlabeled: null
+  aug_pair: null
+  vocab: null
+  cache: ${root}/cache/brat_genia_tacl_ner
+  use_cache: true
+  use_unlabeled: false
+  use_aug_pair: false
+  split_mode: null
+  split_id: null
+emb_mapping:
+  glove100: ${root}/data/glove/glove.6B.100d.txt
+  glove300: ${root}/data/glove/glove.840B.300d.txt
+  glove6b_300: ${root}/data/glove/glove.6B.300d.txt
+  bio: ${root}/data/bio_nlp_vec/PubMed-shuffle-win-30.txt
+embedding:
+  _use_word: true
+  _use_subword: true
+  _use_pos: false
+  _cat_output: true
+  _runtime_normalize: none
+  _transformer_model: dmis-lab/biobert-large-cased-v1.1
+  _word_embedding: bio
+  word_embedding:
+    field: words
+    normalize:
+      when: begin
+      method: std
+    args:
+      _target_: fastNLP.embeddings.StaticEmbedding
+      model_dir_or_name: ${emb_mapping.${embedding._word_embedding}}
+      min_freq: 2
+      lower: true
+  bert:
+    field: subwords
+    requires_vocab: false
+    args:
+      _target_: src.modules.embeddings.InjectableTransformersEmbedding
+      model: ${embedding._transformer_model}
+      n_layers: 4
+      n_out: 0
+      requires_grad: true
+      pooling: first
+  char_lstm:
+    field: words
+    args:
+      _target_: src.modules.embeddings.InjectableLSTMCharEmbedding
+      embed_size: 100
+      char_emb_size: 50
+      hidden_size: 100
+      min_char_freq: 0
+      include_word_start_end: false
+      activation: null
+      linear: false
+      pool_method: last
+encoder:
+  _target_: src.encoders.MuxEncoder
+  _mix: true
+  _init: zy
+  shared:
+    embedding: ${..embedding}
+    _target_: src.encoders.LSTMEncoder
+    reproject: 0
+    mix: ${.._mix}
+    embedding_dropout: 0.33
+    embedding_dropout_only_words: false
+    pre_shared_dropout: 0.33
+    post_shared_dropout: 0.33
+    pre_dropout: 0.0
+    post_dropout: 0.0
+    rnn_type: lstm
+    hidden_size: 400
+    proj_size: 0
+    num_layers: 3
+    output_layers:
+    - 0
+    - 1
+    - 2
+    init_version: ${.._init}
+    shared_dropout: true
+    lstm_dropout: 0.33
+  arc:
+    embedding: ${..embedding}
+    _target_: src.encoders.LSTMEncoder
+    reproject: 0
+    mix: ${.._mix}
+    embedding_dropout: 0.33
+    embedding_dropout_only_words: false
+    pre_shared_dropout: 0.33
+    post_shared_dropout: 0.33
+    pre_dropout: 0.0
+    post_dropout: 0.0
+    rnn_type: lstm
+    hidden_size: 400
+    proj_size: 0
+    num_layers: 3
+    output_layers:
+    - 0
+    - 1
+    - 2
+    init_version: ${.._init}
+    shared_dropout: true
+    lstm_dropout: 0.33
+  span:
+    embedding: ${..embedding}
+    _target_: src.encoders.LSTMEncoder
+    reproject: 0
+    mix: ${.._mix}
+    embedding_dropout: 0.33
+    embedding_dropout_only_words: false
+    pre_shared_dropout: 0.33
+    post_shared_dropout: 0.33
+    pre_dropout: 0.0
+    post_dropout: 0.0
+    rnn_type: lstm
+    hidden_size: 400
+    proj_size: 0
+    num_layers: 3
+    output_layers:
+    - 0
+    - 1
+    - 2
+    init_version: ${.._init}
+    shared_dropout: true
+    lstm_dropout: 0.33
+  label:
+    embedding: ${..embedding}
+    _target_: src.encoders.LSTMEncoder
+    reproject: 0
+    mix: ${.._mix}
+    embedding_dropout: 0.33
+    embedding_dropout_only_words: false
+    pre_shared_dropout: 0.33
+    post_shared_dropout: 0.33
+    pre_dropout: 0.0
+    post_dropout: 0.0
+    rnn_type: lstm
+    hidden_size: 400
+    proj_size: 0
+    num_layers: 3
+    output_layers:
+    - 0
+    - 1
+    - 2
+    init_version: ${.._init}
+    shared_dropout: true
+    lstm_dropout: 0.33
+  mapping:
+    arc:
+    - shared.x
+    - arc.x
+    span:
+    - shared.x
+    - span.x
+    label:
+    - shared.x
+    - label.x
+task:
+  _target_: src.task_specific.brat.ner_onestage2_gonly.BratNEROneStage2
+  loss_type: crf
+  smooth: 1.0
+  partition_reg: 0.0
+  maximize_entropy: 0.0
+  exp_opt_entropy: 1.0
+  entropy_on_all: false
+  label_loss_coeff: 1.0
+  struct_loss_threshold: 0
+  neg_weight: 0.1
+  label_focal_loss: false
+  bias_on_diff_head: 0.0
+  bound_height: false
+  marginal_map: false
+  unstructured_decode: false
+  loss_reduction_mode: num_span:num_span
+  fencepost_mode: transformer
+  arc_mlp_hidden: 500
+  arc_post_hidden_dim: 0
+  span_ind_mlp_hidden: 500
+  span_ind_post_hidden_dim: 0
+  label_mlp_hidden: 384
+  label_post_hidden_dim: 0
+  label_mode: null
+  label_use_head: marginal
+  label_pre_marginal: false
+  mlp_dropout: 0.33
+  mlp_activate: true
+  scale: false
+  positional_biaffine: true
+  train_bias: 0.0
+  decode_bias: 0.0
+  train_prune_threshold: 10
+  potential_normalize: true
+  potential_normalize_var: 1.0
+optimizer:
+  groups:
+  - pattern: ^embedding
+    lr: 5.0e-05
+  args:
+    _target_: torch.optim.AdamW
+    lr: 0.002
+    betas:
+    - 0.9
+    - 0.999
+    weight_decay: 0.0
+    eps: 1.0e-12
+scheduler:
+  interval: step
+  frequency: 1
+  init_when_running: true
+  args:
+    _target_: transformers.get_linear_schedule_with_warmup
+    num_warmup_steps: 2 epoch
+    num_training_steps: 100 epoch
+metric:
+  _target_: src.utils.metric.SpanMetric
+  unique: false
+  label_as_string: false
+runner:
+  _target_: src.runners.BasicRunner
+  load_from_checkpoint: null
+  loss_reduction_mode: sum
+  ignore_punct: false
+  test_when_val: true
+  train_with_dev: false
+trainer:
+  logger:
+    _target_: pytorch_lightning.loggers.WandbLogger
+    name: ${name}
+    project: ${project}
+    tags: []
+    save_code: false
+    save_dir: ${root}/outputs
+  callbacks:
+    wandb:
+      _target_: src.utils.callback.WatchModelWithWandb
+      log: ${in_debugger:gradients,null}
+      log_freq: 100
+    progress_bar:
+      _target_: src.utils.callback.MyProgressBar
+      refresh_rate: 1
+      process_position: 0
+    early_stopping:
+      _target_: pytorch_lightning.callbacks.EarlyStopping
+      monitor: ${watch_field}
+      mode: ${watch_mode}
+      patience: 100
+    lr_monitor:
+      _target_: src.utils.callback.LearningRateMonitorWithEarlyStop
+      logging_interval: epoch
+      minimum_lr: 1.0e-08
+    best_watcher:
+      _target_: src.utils.callback.BestWatcherCallback
+      monitor: ${watch_field}
+      mode: ${watch_mode}
+      hint: true
+      save:
+        dirpath: checkpoint
+        filename: ${ckpt_name:'{epoch}-{step}-{${watch_field}:.2f}',${watch_field},${runner.test_when_val}}
+        start_patience: 10
+      write: new
+      report: true
+  _target_: src.utils.fn.instantiate_trainer
+  gpus: 1
+  gradient_clip_val: 5.0
+  track_grad_norm: -1
+  max_epochs: 1000
+  max_steps: null
+  val_check_interval: 1.0
+  accumulate_grad_batches: 8
+  precision: 32
+  num_sanity_val_steps: ${in_debugger:0,2}
+  resume_from_checkpoint: null
+  accelerator: ${accelerator:${.gpus}}
+  terminate_on_nan: ${in_debugger:true,false}
+  replace_sampler_ddp: false
+  weights_summary: ${in_debugger:full,null}
+  multiple_trainloader_mode: min_size
+model:
+  _target_: src.models.basic.BasicModel
+project: brat_genia
