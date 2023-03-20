@@ -1,3 +1,5 @@
+# @package _global_
+
 seed: 1
 name: ${name_guard:@@@AUTO@@@}
 watch_field: val/f1
